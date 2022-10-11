@@ -18,10 +18,6 @@ export class PostService {
       user: { connect: { id: user.id } },
     };
 
-    if (payload.communityId) {
-      data.community = { connect: { id: payload.communityId } };
-    }
-
     const postCreated = await this.post.create(data);
 
     return postCreated;

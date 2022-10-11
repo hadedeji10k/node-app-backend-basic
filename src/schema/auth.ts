@@ -7,7 +7,6 @@ export const signUpSchema = {
     phone: { type: "string" },
     email: { type: "string" },
     password: { type: "string" },
-    referralCode: { type: "string" },
   },
   errorMessage: {
     required: {

@@ -7,7 +7,6 @@ export const createPostSchema = {
     content: { type: "string" },
     description: { type: "string" },
     thumbnailUrl: { type: "string" },
-    communityId: { type: "string" },
   },
   errorMessage: {
     required: {
@@ -28,6 +27,5 @@ export const updatePostSchema = {
     content: { type: "string" },
     description: { type: "string" },
     thumbnailUrl: { type: "string" },
-    communityId: { type: "string" },
   },
 };
