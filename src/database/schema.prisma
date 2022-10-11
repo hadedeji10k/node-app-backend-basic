@@ -1,0 +1,85 @@
+datasource db {
+    url      = env("DATABASE_URL")
+    provider = "postgresql"
+}
+
+generator client {
+    provider = "prisma-client-js"
+}
+
+model User {
+    id               String     @id @default(uuid())
+    fullName         String     @map("full_name") @db.VarChar
+    email            String     @unique @db.VarChar
+    phone            String?    @unique @db.VarChar
+    password         String     @db.VarChar
+    username         String?    @unique @db.VarChar
+    gender           String?    @db.VarChar(6)
+    age              Int?       @db.Integer
+    avatar           String?    @default("") @db.Text
+    line1            String?    @db.VarChar
+    city             String?    @db.VarChar
+    state            String?    @db.VarChar
+    country          String?    @db.VarChar
+    dateOfBirth      DateTime?  @map("date_of_birth")
+    emailConfirmed   Boolean    @default(false) @map("email_confirmed")
+    phoneConfirmed   Boolean    @default(false) @map("phone_confirmed")
+    isVerified       Boolean    @default(false) @map("is_verified")
+    phoneOtpCode     String?    @map("phone_otp_code")
+    emailOtpCode     String?    @map("email_otp_code")
+    passwordOtpCode  String?    @map("password_otp_code")
+    otpExpiryDate    DateTime?  @map("otp_expiry_date")
+    createdAt        DateTime   @default(now()) @map("created_at")
+    updatedAt        DateTime   @updatedAt @map("updated_at")
+    role             UserRole   @default(USER)
+    interests        String[]
+    posts            Post[]     @relation("author")
+    comments         Comments[] @relation("commenter_id")
+    lastDayStreak    DateTime?  @default(now()) @map("last_day_streak")
+    currentDayStreak Int?       @default(1) @map("current_day_streak")
+
+    @@map("users")
+}
+
+enum UserRole {
+    USER
+    MODERATOR
+    ADMIN
+}
+
+model Post {
+    id           String     @id @default(uuid())
+    authorId     String     @map("poster_id")
+    user         User       @relation(fields: [authorId], references: [id], name: "author")
+    title        String
+    content      String
+    description  String
+    thumbnailUrl String     @map("thumbnail_url")
+    likes        Int        @default(0)
+    isDeleted    Boolean    @default(false)
+    createdAt    DateTime   @default(now()) @map("created_at")
+    updatedAt    DateTime   @updatedAt @map("updated_at")
+    comments     Comments[] @relation("sourcePost")
+
+    @@map("posts")
+}
+
+model Comments {
+    id                  String     @id @default(uuid())
+    content             String?    @db.Text
+    commenterId         String     @map("commenter_id")
+    user                User       @relation(fields: [commenterId], references: [id], name: "commenter_id")
+    sourcePostId        String     @map("source_post_id")
+    post                Post       @relation(fields: [sourcePostId], references: [id], name: "sourcePost")
+    isDeleted           Boolean    @default(false) @map("is_deleted")
+    commentLikesCount   Int        @default(0) @map("comment_likes_count")
+    commentRepliesCount Int        @default(0) @map("comment_replies_count")
+    isEdited            Boolean    @default(false) @map("is_edited")
+    parentId            String?    @map("parent_id")
+    parent              Comments?  @relation("replies", fields: [parentId], references: [id])
+    comments            Comments[] @relation("replies")
+    createdAt           DateTime   @default(now()) @map("created_at")
+    updatedAt           DateTime   @updatedAt @map("updated_at")
+
+    @@map("comments")
+}
